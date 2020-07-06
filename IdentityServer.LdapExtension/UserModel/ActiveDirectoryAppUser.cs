@@ -64,7 +64,7 @@ namespace IdentityServer.LdapExtension.UserModel
             {
                 try
                 {
-                    var userRoles = user.getAttribute(ActiveDirectoryLdapAttributes.MemberOf.ToDescriptionString()).StringValues;
+                    var userRoles = user.GetAttribute(ActiveDirectoryLdapAttributes.MemberOf.ToDescriptionString()).StringValues;
                     while (userRoles.MoveNext())
                     {
                         this.Claims.Add(new Claim(JwtClaimTypes.Role, userRoles.Current.ToString()));
@@ -78,7 +78,6 @@ namespace IdentityServer.LdapExtension.UserModel
                     // No roles exists it seems.
                 }
             }
-
         }
 
         /// <summary>
@@ -103,12 +102,15 @@ namespace IdentityServer.LdapExtension.UserModel
             string value = string.Empty;
             try
             {
-                value = user.getAttribute(ldapAttribute.ToDescriptionString()).StringValue;
-                return new Claim(claim, value);
+                return new Claim(claim, user.GetAttribute(ldapAttribute.ToDescriptionString()).StringValue);
+            }
+            catch (KeyNotFoundException)
+            {
+                // We could do logs about this. But basically the attribute is not found.
             }
             catch (Exception)
             {
-                // Should do something... But basically the attribute is not found
+                // Catch all to swallow the exception.
             }
 
             return new Claim(claim, value); // Return an empty claim
@@ -116,7 +118,7 @@ namespace IdentityServer.LdapExtension.UserModel
 
         /// <summary>
         /// This will set the base details such as:
-        /// - DisplayName
+        /// - DisplayName (Can be null/non existent)
         /// - Username
         /// - ProviderName
         /// - SubjectId
@@ -127,8 +129,8 @@ namespace IdentityServer.LdapExtension.UserModel
         /// <param name="providerName">Specific provider such as Google, Facebook, etc.</param>
         public void SetBaseDetails(LdapEntry ldapEntry, string providerName)
         {
-            DisplayName = ldapEntry.getAttribute(ActiveDirectoryLdapAttributes.DisplayName.ToDescriptionString())?.StringValue;
-            Username = ldapEntry.getAttribute(ActiveDirectoryLdapAttributes.UserName.ToDescriptionString()).StringValue;
+            DisplayName = ldapEntry.GetNullableAttribute(ActiveDirectoryLdapAttributes.DisplayName.ToDescriptionString())?.StringValue;
+            Username = ldapEntry.GetAttribute(ActiveDirectoryLdapAttributes.UserName.ToDescriptionString()).StringValue;
             ProviderName = providerName;
             SubjectId = Username; // We could use the uidNumber instead in a sha algo.
             ProviderSubjectId = Username;

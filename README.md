@@ -30,7 +30,7 @@ Install-Package IdentityServer.LdapExtension
 > - Ldap Extension 2.1.8 goes with IdentityServer 2.4.x
 
 ## Configuration for IdentityServer4 Server
-An easy extension method have been created in order to add the LDAP as a provider to your IdentityServer. For this you simply have to use the `AddLdapUsers<TApplicationUser>(LdapConfigSection, StoreTypeOrCustomStore)`. The configuration has to be provided or it won't work. The configuration is described [here](#IS.AppSettings).
+An easy extension method have been created in order to add the LDAP as a provider to your IdentityServer. For this you simply have to use the `AddLdapUsers<TApplicationUser>(LdapConfigSection, StoreTypeOrCustomStore)`. The configuration has to be provided or it won't work. The configuration is described [here](#appsettings-configuration).
 
 In the `Startup.cs` under `ConfigureServices` method, you will have something similar to the following by default (Starter pack for IdentityServer). The last line is what you will need to add in order to get started.
 
@@ -56,7 +56,7 @@ services.AddIdentityServer()
 ### AppSettings Configuration
 The `appsettings.json` will require a configuration for the extension. Here's an example using OpenLdap:
 
-```json
+```javascript
 {
   "MyConfigurationSection": { // Name can be of your choosing
     "Url": "localhost",
@@ -85,7 +85,7 @@ By default the cache is using InMemory, but you can also use Redis. It needs to 
 
 #### Quick and Simple Example of a Configuration
 2 configurations using a `preFilterRegex` for discrimination.
-```json
+```javascript
   "IdentityServerLdap": {
     // Example: If you use a redis instead of in-memory (See Startup.cs)
     //"redis": "localhost:32771,ssl=false",
@@ -135,6 +135,7 @@ I plan to work on the following:
 * @marianahycit: Contribution
 * @uchetfield: Contribution (Issue #10)
 * @ttutko
+* @chrgraefe 
 
 ## License
 MIT
